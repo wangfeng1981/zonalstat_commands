@@ -130,7 +130,7 @@ bool horiLineInterLineSeg(const double horiY ,
 	const double y0,
 	const double x1,
 	const double y1, 
-	int & resX ) // cross point to pixel x in image
+	double & resX ) // cross point to pixel x in image //bugfixed 2020-6-18
 {
 	if ( y0  != y1 )
 	{
@@ -173,12 +173,13 @@ void WShpPolygon::convertLines2Segments(vector<WShpLineSeg>& lines,
 	const int imageWidth ,
 	const double resoX ) {
 
-	vector<int> crossPointXVector;
+	//vector<int> crossPointXVector;//bugfixed 2020-6-18
+	vector<double> crossPointXVector ;
 	for (int iy = 0; iy < imageHeight; ++iy) {
 		crossPointXVector.clear();
 		double horiY = topY + resoY * iy;
 		for (int il = 0; il < lines.size(); ++il) {
-			int resX = -1;
+			double resX = -1;//use double replace int 2020-6-18
 			if ( horiLineInterLineSeg(horiY,	lines[il].x0, lines[il].y0,	lines[il].x1, lines[il].y1,	resX) ) {
 				crossPointXVector.push_back(resX);
 			}

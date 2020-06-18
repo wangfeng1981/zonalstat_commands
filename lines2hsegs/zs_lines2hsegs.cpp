@@ -17,7 +17,8 @@ using namespace ArduinoJson;
 int main(int argc,char** argv) { 
 	cout<<"A program to convert lonlat lines into horisegments."<<endl ;
 	cout<<"v1.0  by wangfeng_dq@piesat.cn 2019-6-1"<<endl ;
-	cout<<"lines2hsegs lines.json leftx topy(should <0) resox resoy imgwid imghei hsegs.json"<<endl ;
+	cout<<"v1.1 bugfixed in horiLineInterLineSeg 2020-6-18 "<<endl ;
+	cout<<"lines2hsegs lines.json leftx topy resox resoy(should <0) imgwid imghei hsegs.json"<<endl ;
 
 	if( argc !=9 )
 	{
