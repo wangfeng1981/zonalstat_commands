@@ -5,7 +5,7 @@
 
 
 #include <iostream>
-#include <ctime>
+#include <ctime> 
 #include <chrono>
 #include <iostream>
 #include "../wshppolygon.h"
@@ -31,9 +31,9 @@ int main(int argc,char** argv) {
 	vector<WShpLineSeg> linesVec ;
 	cout<<"processing..."<<endl ;
 	bool isok = WShpPolygon::readLinesFromShapefile(
-		shpfile.c_str() , 
+		shpfile.c_str() ,
 		linesVec
-		) ;
+		) ;  
 
 	if( isok )
 	{//output to json

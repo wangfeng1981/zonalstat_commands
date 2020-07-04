@@ -94,9 +94,11 @@ bool WShpPolygon::readLinesFromShapefile(const char* filepath, vector<WShpLineSe
 		SHPClose(handle);
 		return false;
 	}
-	
-	if (shpType != SHPT_POLYGON ) {
-		printf("error : WShpPolygon, shpType is not SHPT_POLYGON.\n");
+	printf("the source file shpType is :%d\n" , shpType) ;
+	printf("entities:%d\n" , entities ) ;
+	if (shpType != SHPT_POLYGON && shpType!=SHPT_POLYGONZ ) {
+		printf("error : WShpPolygon, shpType is not SHPT_POLYGON 5,SHPT_POLYGONZ 15.\n");
+		
 		SHPClose(handle);
 		return false;
 	}
@@ -107,8 +109,18 @@ bool WShpPolygon::readLinesFromShapefile(const char* filepath, vector<WShpLineSe
 		if (shp1 != 0) {
 			//printf("debug id:%d  numParts:%d  numVert:%d\n",shp1->nShapeId, shp1->nParts, shp1->nVertices);
 			//只考虑一个part 复杂多边形不考虑
-			if (shp1->nParts == 1 && shp1->nVertices > 2 ) {
-				for (int iv = shp1->panPartStart[0]; iv < shp1->nVertices - 1 ; ++iv) {
+			printf("enti %d , nparts %d , verts %d\n" , i , shp1->nParts , shp1->nVertices) ;
+			for(int ip = 0 ; ip<shp1->nParts ; ++ip){
+				int vstart = shp1->panPartStart[ip] ;
+				int vend = vstart ;
+				if(ip<shp1->nParts-1){
+					vend = shp1->panPartStart[ip+1] ;
+				}else
+				{
+					vend = shp1->nVertices ;
+				}
+				printf("ipart %d start %d end %d\n",ip ,vstart , vend ) ;
+				for (int iv =vstart; iv < vend-1 ; ++iv) {
 					lines.push_back(WShpLineSeg(
 						shp1->padfX[iv] , 
 						shp1->padfY[iv] ,
@@ -116,7 +128,9 @@ bool WShpPolygon::readLinesFromShapefile(const char* filepath, vector<WShpLineSe
 						shp1->padfY[iv+1] 
 					));
 				}
+				
 			}
+			
 			SHPDestroyObject(shp1);
 		}
 	}
