@@ -37,28 +37,67 @@ bool readLinesFromGeojson( string geojsonFile , vector<WShpLineSeg>& lines)
 				bool hasgeo = featureOne.containsKey("geometry") ;
 				if( hasgeo == true ){
 					JsonObject& geo1 = featureOne["geometry"] ;
+					string geoType = geo1["type"].as<char*>() ;
+					int igeoType = 0 ;
+					if( geoType.compare("MultiPolygon") == 0 )
+					{
+						igeoType = 2 ;
+					}else if( geoType.compare("Polygon") == 0 )
+					{
+						igeoType = 1 ;
+					}else{
+						cout<<"geometry type is not MultiPolygon nor Polygon."<<endl ;
+						return false ;
+					}
+
 					if( geo1.containsKey("coordinates") ==true ){
 							JsonArray& arr0 = geo1["coordinates"].as<JsonArray>() ;
 							JsonArray& arr1 = arr0[0].as<JsonArray>() ;
-							JsonArray& arr2 = arr1[0].as<JsonArray>() ;
-							cout<<"num verts:"<<arr2.size()<<endl ;
-							if( arr2.size()>1 )
-							{
-								for(int iv = 0 ; iv < arr2.size()-1 ; ++ iv )
+							if( igeoType==1 )
+							{//Polygon
+								JsonArray& arr2 = arr1 ;
+								cout<<"num verts:"<<arr2.size()<<endl ;
+								if( arr2.size()>1 )
 								{
-									JsonArray& vert0 = arr2[iv].as<JsonArray>() ;
-									JsonArray& vert1 = arr2[iv+1].as<JsonArray>() ;
-									WShpLineSeg seg1 ;
-									seg1.x0 = vert0[0].as<double>() ;
-									seg1.y0 = vert0[1].as<double>() ;
-									seg1.x1 = vert1[0].as<double>() ;
-									seg1.y1 = vert1[1].as<double>() ;
-									lines.push_back(seg1) ;
+									for(int iv = 0 ; iv < arr2.size()-1 ; ++ iv )
+									{
+										JsonArray& vert0 = arr2[iv].as<JsonArray>() ;
+										JsonArray& vert1 = arr2[iv+1].as<JsonArray>() ;
+										WShpLineSeg seg1 ;
+										seg1.x0 = vert0[0].as<double>() ;
+										seg1.y0 = vert0[1].as<double>() ;
+										seg1.x1 = vert1[0].as<double>() ;
+										seg1.y1 = vert1[1].as<double>() ;
+										lines.push_back(seg1) ;
+									}
+									return true ;
+								}else{
+									cout<<"num verts less than 2"<<endl ;
+									return false ;
 								}
-								return true ;
-							}else{
-								cout<<"num verts less than 2"<<endl ;
-								return false ;
+							}
+							else if( igeoType==2 ){
+								//MultiPolygon
+								JsonArray& arr2 = arr1[0].as<JsonArray>() ;
+								cout<<"num verts:"<<arr2.size()<<endl ;
+								if( arr2.size()>1 )
+								{
+									for(int iv = 0 ; iv < arr2.size()-1 ; ++ iv )
+									{
+										JsonArray& vert0 = arr2[iv].as<JsonArray>() ;
+										JsonArray& vert1 = arr2[iv+1].as<JsonArray>() ;
+										WShpLineSeg seg1 ;
+										seg1.x0 = vert0[0].as<double>() ;
+										seg1.y0 = vert0[1].as<double>() ;
+										seg1.x1 = vert1[0].as<double>() ;
+										seg1.y1 = vert1[1].as<double>() ;
+										lines.push_back(seg1) ;
+									}
+									return true ;
+								}else{
+									cout<<"num verts less than 2"<<endl ;
+									return false ;
+								}
 							}
 					}else{
 						cout<<"no coordinates."<<endl ;
@@ -91,6 +130,7 @@ int main(int argc,char** argv) {
 	cout<<"A program to convert shp or geojson file into lonlat lines."<<endl ;
 	cout<<"v1.0  by wangfeng_dq@piesat.cn 2019-6-1"<<endl ;
 	cout<<"v2.0 add geojson support. 2021-1-30"<<endl ;
+	cout<<"v2.1 support geojson for MultiPolygon and Polygon. 2021-1-30"<<endl ;
 	cout<<"shp2lines some.shp lines.json"<<endl ;
 	cout<<"shp2lines some.geojson lines.json"<<endl ;
 
